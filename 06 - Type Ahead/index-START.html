@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Type Ahead 👀</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <form class="search-form">
@@ -14,9 +16,45 @@
       <li>or a state</li>
     </ul>
   </form>
-<script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  <script>
+    const endpoint =
+      'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+    const searchInput = document.querySelector('.search')
+    const listItem = document.querySelector('.suggestions')
 
-</script>
+    const cities = []
+    fetch(endpoint)
+      .then(blob => blob.json())
+      .then(data => cities.push(...data))
+
+
+
+    function filterResult(wordsToMatch) {
+      return cities.filter((item) => {
+        const regex = new RegExp(wordsToMatch, 'gi')
+        return item.city.match(regex)
+      })
+    }
+
+    function displayResult() {
+      const filteredItem = filterResult(this.value)
+      const html = filteredItem.map((item) => {
+        return `
+        <li>
+          <span class="name">${item.city}, ${item.state}</span>
+          <span class="population">${item.population}</span> 
+        </li>
+        `
+      }).join('')
+      listItem.innerHTML = html
+
+
+    }
+
+    searchInput.addEventListener('change', displayResult)
+    searchInput.addEventListener('keyup', displayResult)
+    //console.log(cities)
+  </script>
 </body>
+
 </html>
